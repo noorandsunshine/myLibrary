@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>MyLibrary</title>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <main class="container">
+    <h1>MyLibrary</h1>
+    <p class="intro">A home for the books I want to remember.</p>
+
+    <form id="book-form">
+      <label for="title">Book title</label>
+      <input
+        id="title"
+        type="text"
+        placeholder="Braiding Sweetgrass"
+        required
+      >
+
+      <label for="author">Author</label>
+      <input
+        id="author"
+        type="text"
+        placeholder="Robin Wall Kimmerer"
+        required
+      >
+
+      <label for="status">Reading status</label>
+      <select id="status">
+        <option value="Want to Read">Want to Read</option>
+        <option value="Reading">Reading</option>
+        <option value="Finished">Finished</option>
+      </select>
+
+      <button type="submit">Add Book</button>
+    </form>
+
+    <section>
+      <h2>My Books</h2>
+      <div id="book-list"></div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

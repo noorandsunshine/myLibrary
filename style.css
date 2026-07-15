@@ -1,0 +1,95 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 40px 20px;
+  background: #f7f4ee;
+  color: #222;
+  font-family: Arial, sans-serif;
+}
+
+.container {
+  width: 100%;
+  max-width: 650px;
+  margin: 0 auto;
+}
+
+h1 {
+  margin-bottom: 5px;
+  font-size: 42px;
+}
+
+.intro {
+  margin-top: 0;
+  margin-bottom: 30px;
+  color: #555;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 24px;
+  background: white;
+  border-radius: 14px;
+}
+
+label {
+  margin-top: 8px;
+  font-weight: bold;
+}
+
+input,
+select,
+button {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  border-radius: 8px;
+}
+
+input,
+select {
+  border: 1px solid #bbb;
+}
+
+button {
+  margin-top: 12px;
+  border: none;
+  background: #222;
+  color: white;
+  cursor: pointer;
+}
+
+button:hover {
+  opacity: 0.85;
+}
+
+section {
+  margin-top: 35px;
+}
+
+.book-card {
+  margin-bottom: 14px;
+  padding: 18px;
+  background: white;
+  border-radius: 12px;
+}
+
+.book-card h3 {
+  margin: 0 0 6px;
+}
+
+.book-card p {
+  margin: 4px 0;
+}
+
+.delete-button {
+  width: auto;
+  margin-top: 12px;
+  padding: 8px 12px;
+  background: #eee;
+  color: #222;
+}
