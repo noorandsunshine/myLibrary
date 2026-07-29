@@ -15,6 +15,38 @@
     <p class="intro">A home for the books I want to remember.</p>
 
     <form id="book-form">
+        <div class="isbn-section">
+              <label for="isbn">ISBN</label>
+
+              <div class="isbn-controls">
+                <input
+                  id="isbn"
+                  type="text"
+                  inputmode="numeric"
+                  placeholder="978..."
+                >
+
+                <button id="lookup-button" type="button">
+                  Find Book
+                </button>
+              </div>
+
+                      <button id="scan-button" type="button">
+          Scan Barcode
+        </button>
+
+        <div id="scanner-container" hidden>
+          <div id="barcode-reader"></div>
+
+          <button id="stop-scan-button" type="button">
+            Stop Camera
+          </button>
+        </div>
+
+          <p id="lookup-message" aria-live="polite"></p>
+
+        </div>
+
       <label for="title">Book title</label>
       <input
         id="title"
@@ -47,6 +79,7 @@
     </section>
   </main>
 
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
