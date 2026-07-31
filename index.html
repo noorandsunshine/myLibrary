@@ -63,6 +63,39 @@
         required
       >
 
+            <label for="pages">Number of pages</label>
+      <input
+        id="pages"
+        type="number"
+        min="1"
+        placeholder="408"
+      >
+
+      <label for="publish-date">Publication date</label>
+      <input
+        id="publish-date"
+        type="text"
+        placeholder="2013"
+      >
+
+      <input id="cover-url" type="hidden">
+
+      <label for="cover-upload">Your cover image</label>
+      <input
+        id="cover-upload"
+        type="file"
+        accept="image/*"
+        capture="environment"
+      >
+      <p class="field-help">
+        Take a photo of your copy or choose an image from your device.
+      </p>
+
+      <div id="cover-preview-container" hidden>
+        <p><strong>Book cover</strong></p>
+        <img id="cover-preview" alt="Book cover preview">
+      </div>
+
       <label for="status">Reading status</label>
       <select id="status">
         <option value="Want to Read">Want to Read</option>

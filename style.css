@@ -93,3 +93,12 @@ section {
   background: #eee;
   color: #222;
 }
+
+.book-cover {
+  display: block;
+  width: 120px;
+  height: 180px;
+  margin-bottom: 16px;
+  border-radius: 8px;
+  object-fit: cover;
+}

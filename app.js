@@ -1,14 +1,15 @@
 const bookForm = document.getElementById("book-form");
 const bookList = document.getElementById("book-list");
-
 const isbnInput = document.getElementById("isbn");
 const lookupButton = document.getElementById("lookup-button");
 const lookupMessage = document.getElementById("lookup-message");
 const scanButton = document.getElementById("scan-button");
 const scannerContainer = document.getElementById("scanner-container");
 const stopScanButton = document.getElementById("stop-scan-button");
-
+const coverUpload = document.getElementById("cover-upload");
 const barcodeScanner = new Html5Qrcode("barcode-reader");
+
+
 let isScanning = false;
 
 async function lookupBook(isbnValue) {
@@ -47,6 +48,28 @@ async function lookupBook(isbnValue) {
         return author.name;
       }).join(", ") || "";
 
+          const pagesInput = document.getElementById("pages");
+    const publishDateInput = document.getElementById("publish-date");
+    const coverUrlInput = document.getElementById("cover-url");
+    const coverPreview = document.getElementById("cover-preview");
+    const coverPreviewContainer = document.getElementById(
+      "cover-preview-container"
+    );
+
+    pagesInput.value = book.number_of_pages || "";
+    publishDateInput.value = book.publish_date || "";
+
+    const coverUrl = book.cover?.medium || book.cover?.large || "";
+    coverUrlInput.value = coverUrl;
+
+    if (coverUrl) {
+      coverPreview.src = coverUrl;
+      coverPreviewContainer.hidden = false;
+    } else {
+      coverPreview.removeAttribute("src");
+      coverPreviewContainer.hidden = true;
+    }
+
     isbnInput.value = isbn;
     lookupMessage.textContent =
       "Book found! Review the information before adding it.";
@@ -61,6 +84,72 @@ async function lookupBook(isbnValue) {
 
 lookupButton.addEventListener("click", function () {
   lookupBook(isbnInput.value);
+});
+
+function compressCoverImage(file) {
+  return new Promise(function (resolve, reject) {
+    const reader = new FileReader();
+
+    reader.onload = function (event) {
+      const image = new Image();
+
+      image.onload = function () {
+        const maximumWidth = 360;
+        const maximumHeight = 540;
+        const scale = Math.min(
+          maximumWidth / image.width,
+          maximumHeight / image.height,
+          1
+        );
+
+        const canvas = document.createElement("canvas");
+        canvas.width = Math.round(image.width * scale);
+        canvas.height = Math.round(image.height * scale);
+
+        const context = canvas.getContext("2d");
+        context.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+        resolve(canvas.toDataURL("image/jpeg", 0.75));
+      };
+
+      image.onerror = reject;
+      image.src = event.target.result;
+    };
+
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+coverUpload.addEventListener("change", async function () {
+  const selectedFile = coverUpload.files[0];
+
+  if (!selectedFile) {
+    return;
+  }
+
+  lookupMessage.textContent = "Preparing your cover image...";
+
+  try {
+    const compressedImage = await compressCoverImage(selectedFile);
+
+    const coverUrlInput = document.getElementById("cover-url");
+    const coverPreview = document.getElementById("cover-preview");
+    const coverPreviewContainer = document.getElementById(
+      "cover-preview-container"
+    );
+
+    coverUrlInput.value = compressedImage;
+    coverPreview.src = compressedImage;
+    coverPreviewContainer.hidden = false;
+
+    lookupMessage.textContent =
+      "Cover image ready! Review the book before adding it.";
+  } catch (error) {
+    console.error(error);
+    lookupMessage.textContent =
+      "That image could not be prepared. Please choose another.";
+  }
 });
 
 async function stopScanner() {
@@ -144,13 +233,38 @@ function displayBooks() {
 
   books.forEach(function (book, index) {
     const bookCard = document.createElement("div");
+    
     bookCard.classList.add("book-card");
 
+    const coverUrl =
+      book.coverUrl ||
+      (book.isbn
+        ? `https://covers.openlibrary.org/b/isbn/${book.isbn}-M.jpg?default=false`
+        : "");
+      
     bookCard.innerHTML = `
+    
+          ${
+        coverUrl
+          ? `<img
+              class="book-cover"
+              src="${coverUrl}"
+              alt="Book cover"
+              onerror="this.hidden = true"
+            >`
+          : ""
+      }
+
       <h3>${book.title}</h3>
           <p>by ${book.author}</p>
-          ${book.isbn ? `<p><strong>ISBN:</strong> ${book.isbn}</p>` : ""}
-          <p><strong>Status:</strong> ${book.status}</p>
+                ${book.isbn ? `<p><strong>ISBN:</strong> ${book.isbn}</p>` : ""}
+                ${book.pages ? `<p><strong>Pages:</strong> ${book.pages}</p>` : ""}
+               ${
+        book.publishDate
+          ? `<p><strong>Published:</strong> ${book.publishDate}</p>`
+          : ""
+      }
+      <p><strong>Status:</strong> ${book.status}</p>
       <button class="delete-button" data-index="${index}">
         Delete
       </button>
@@ -168,6 +282,10 @@ bookForm.addEventListener("submit", function (event) {
   const author = document.getElementById("author").value.trim();
   const status = document.getElementById("status").value;
 
+  const pages = document.getElementById("pages").value;
+  const publishDate = document.getElementById("publish-date").value.trim();
+  const coverUrl = document.getElementById("cover-url").value;
+
   const duplicateBook = books.find(function (book) {
     return isbn && book.isbn === isbn;
   });
@@ -178,10 +296,13 @@ bookForm.addEventListener("submit", function (event) {
     return;
   }
 
-  const newBook = {
+    const newBook = {
     isbn: isbn,
     title: title,
     author: author,
+    pages: pages,
+    publishDate: publishDate,
+    coverUrl: coverUrl,
     status: status
   };
 
@@ -191,6 +312,16 @@ bookForm.addEventListener("submit", function (event) {
   displayBooks();
 
   bookForm.reset();
+
+  const coverPreview = document.getElementById("cover-preview");
+  const coverPreviewContainer = document.getElementById(
+    "cover-preview-container"
+  );
+
+  coverPreview.removeAttribute("src");
+  coverPreviewContainer.hidden = true;
+
+  lookupMessage.textContent = "Book added to your library!";
   lookupMessage.textContent = "Book added to your library!";
 });
 
