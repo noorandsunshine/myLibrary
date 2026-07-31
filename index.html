@@ -6,6 +6,10 @@
 
   <title>MyLibrary</title>
 
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css"
+  >
   <link rel="stylesheet" href="style.css">
 </head>
 
@@ -81,12 +85,32 @@
       <input id="cover-url" type="hidden">
 
       <label for="cover-upload">Your cover image</label>
+      
       <input
         id="cover-upload"
         type="file"
         accept="image/*"
-        capture="environment"
       >
+
+            <div id="crop-container" hidden>
+        <p><strong>Crop your cover</strong></p>
+        <p>Move and zoom the image until the book cover fits inside the box.</p>
+
+        <div class="crop-image-container">
+          <img id="crop-image" alt="Image selected for cropping">
+        </div>
+
+        <div class="crop-actions">
+          <button id="use-crop-button" type="button">
+            Use Crop
+          </button>
+
+          <button id="cancel-crop-button" type="button">
+            Cancel
+          </button>
+        </div>
+      </div>
+      
       <p class="field-help">
         Take a photo of your copy or choose an image from your device.
       </p>
@@ -113,6 +137,7 @@
   </main>
 
   <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

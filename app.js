@@ -7,6 +7,12 @@ const scanButton = document.getElementById("scan-button");
 const scannerContainer = document.getElementById("scanner-container");
 const stopScanButton = document.getElementById("stop-scan-button");
 const coverUpload = document.getElementById("cover-upload");
+const cropContainer = document.getElementById("crop-container");
+const cropImage = document.getElementById("crop-image");
+const useCropButton = document.getElementById("use-crop-button");
+const cancelCropButton = document.getElementById("cancel-crop-button");
+
+let coverCropper = null;
 const barcodeScanner = new Html5Qrcode("barcode-reader");
 
 
@@ -128,28 +134,83 @@ coverUpload.addEventListener("change", async function () {
     return;
   }
 
-  lookupMessage.textContent = "Preparing your cover image...";
+  lookupMessage.textContent = "Preparing your image for cropping...";
 
   try {
-    const compressedImage = await compressCoverImage(selectedFile);
+    const preparedImage = await compressCoverImage(selectedFile);
 
-    const coverUrlInput = document.getElementById("cover-url");
-    const coverPreview = document.getElementById("cover-preview");
-    const coverPreviewContainer = document.getElementById(
-      "cover-preview-container"
-    );
+    if (coverCropper) {
+      coverCropper.destroy();
+    }
 
-    coverUrlInput.value = compressedImage;
-    coverPreview.src = compressedImage;
-    coverPreviewContainer.hidden = false;
+    cropContainer.hidden = false;
 
-    lookupMessage.textContent =
-      "Cover image ready! Review the book before adding it.";
+    cropImage.onload = function () {
+      coverCropper = new Cropper(cropImage, {
+        aspectRatio: 2 / 3,
+        viewMode: 1,
+        autoCropArea: 0.9,
+        background: false,
+        responsive: true
+      });
+
+      lookupMessage.textContent =
+        "Move and zoom the image, then select Use Crop.";
+    };
+
+    cropImage.src = preparedImage;
   } catch (error) {
     console.error(error);
     lookupMessage.textContent =
       "That image could not be prepared. Please choose another.";
   }
+});
+
+useCropButton.addEventListener("click", function () {
+  if (!coverCropper) {
+    return;
+  }
+
+  const croppedCanvas = coverCropper.getCroppedCanvas({
+    width: 360,
+    height: 540,
+    imageSmoothingEnabled: true,
+    imageSmoothingQuality: "high"
+  });
+
+  const croppedImage = croppedCanvas.toDataURL("image/jpeg", 0.75);
+
+  const coverUrlInput = document.getElementById("cover-url");
+  const coverPreview = document.getElementById("cover-preview");
+  const coverPreviewContainer = document.getElementById(
+    "cover-preview-container"
+  );
+
+  coverUrlInput.value = croppedImage;
+  coverPreview.src = croppedImage;
+  coverPreviewContainer.hidden = false;
+
+  coverCropper.destroy();
+  coverCropper = null;
+  cropContainer.hidden = true;
+  cropImage.removeAttribute("src");
+  coverUpload.value = "";
+
+  lookupMessage.textContent =
+    "Cropped cover ready! Review the book before adding it.";
+});
+
+cancelCropButton.addEventListener("click", function () {
+  if (coverCropper) {
+    coverCropper.destroy();
+    coverCropper = null;
+  }
+
+  cropContainer.hidden = true;
+  cropImage.removeAttribute("src");
+  coverUpload.value = "";
+
+  lookupMessage.textContent = "Cover selection cancelled.";
 });
 
 async function stopScanner() {
